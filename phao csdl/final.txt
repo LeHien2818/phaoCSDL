@@ -81,6 +81,15 @@ WHERE customerNumber IN
 	(SELECT productCode FROM products 
      WHERE productName LIKE '18th%' OR productName LIKE '193%' OR productName LIKE '192%' OR productName LIKE '191%' OR productName LIKE '190%'
 ORDER BY productName ASC)));
+-------------
+c3:
+SELECT DISTINCT customerNumber
+FROM orders
+WHERE orderNumber IN (SELECT orderNumber 
+					  FROM orderdetails
+                      WHERE productCode IN (SELECT productCode
+											FROM products
+											WHERE SUBSTRING(productName, 1, 4) REGEXP '^[0-9]+$' AND SUBSTRING(productName, 1, 4) < 1940))
 
 
 Câu 4:
