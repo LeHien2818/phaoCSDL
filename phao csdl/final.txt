@@ -54,6 +54,7 @@ HAVING (totalDebt / totalPurchased) > 0.3
 Câu 3. Thông tin khách hàng có đơn hàng của sản phẩm được sản xuất trước năm 1940
 	-TH tính cả các đơn hàng không có năm sản xuất là trước 1940:
 ///////////////////////
+c1:
 SELECT DISTINCT customerNumber
 FROM orders
 WHERE orderNumber IN (SELECT orderNumber 
@@ -61,6 +62,15 @@ WHERE orderNumber IN (SELECT orderNumber
                       WHERE productCode IN (SELECT productCode
 											FROM products
 											WHERE SUBSTRING(productName, 1, 4) < 1940));
+-------------
+c2:
+SELECT DISTINCT customerNumber
+FROM orders
+WHERE orderNumber IN (SELECT orderNumber 
+					  FROM orderdetails
+                      WHERE productCode IN (SELECT productCode
+											FROM products
+											WHERE SUBSTRING(productName, 1, 4) REGEXP '^[0-9]+$' AND SUBSTRING(productName, 1, 4) < 1940))
 
 	-TH tính các đơn hàng không năm sản xuất là sau 1940:
 /////////////////////
@@ -81,15 +91,6 @@ WHERE customerNumber IN
 	(SELECT productCode FROM products 
      WHERE productName LIKE '18th%' OR productName LIKE '193%' OR productName LIKE '192%' OR productName LIKE '191%' OR productName LIKE '190%'
 ORDER BY productName ASC)));
--------------
-c3:
-SELECT DISTINCT customerNumber
-FROM orders
-WHERE orderNumber IN (SELECT orderNumber 
-					  FROM orderdetails
-                      WHERE productCode IN (SELECT productCode
-											FROM products
-											WHERE SUBSTRING(productName, 1, 4) REGEXP '^[0-9]+$' AND SUBSTRING(productName, 1, 4) < 1940))
 
 
 Câu 4:
