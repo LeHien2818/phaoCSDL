@@ -1,4 +1,5 @@
 Câu 1. Thông tin 3 productline có số lượng hủy nhiều nhất
+// nếu tính tổng số lượng sản phẩm hủy nhiều nhất:
 	-C1: NHA
 /////////////////
 SELECT productline, (SELECT SUM(quantityOrdered)
@@ -20,8 +21,28 @@ SELECT productLine AS name, textDescription,
  (SELECT productCode FROM products WHERE productLine = productlines.productLine GROUP BY productLine)) AS totalCancel
 FROM productlines  
 ORDER BY totalCancel DESC LIMIT 3;
+----------------------------
+// nếu tính số lượt hủy nhiều nhất:
+c1:
+////////////////////////
+SELECT *,
+(SELECT COUNT(*) FROM orders WHERE status = 'Cancelled' AND orderNumber IN 
+ (SELECT orderNumber FROM orderdetails WHERE productCode IN 
+  (SELECT productCode FROM products WHERE productLine = productlines.productLine))) AS cancelCount
+FROM productlines
+ORDER BY cancelCount DESC LIMIT 3;
 
-
+c2:
+/////////////////////
+SELECT pl.*, (SELECT COUNT(*)
+					 FROM orders
+                     WHERE orderNumber IN (SELECT orderNumber
+										   FROM orderDetails
+                                           WHERE productCode IN (SELECT productCode
+																 FROM products
+                                                                 WHERE pl.productline = productline))
+						AND status = 'Cancelled') AS numberOfCancellation
+FROM productlines pl
 
 Câu 2. Thông tin người nợ xấu (debt/purchase >= 0.3)
 	-TH loại cả các đơn hàng cancelled:
@@ -92,6 +113,8 @@ WHERE orderNumber IN (SELECT orderNumber
 											WHERE SUBSTRING(productName, 1, 4) REGEXP '^[0-9]+$' AND SUBSTRING(productName, 1, 4) < 1940))
 
 Câu 4:
+c1:
+///////////////////////
 SELECT productCode, productName, Profit_1, Profit_2, (Profit_1 - Profit_2) AS Difference
 FROM (
     SELECT
@@ -105,3 +128,15 @@ FROM (
 ) AS subquery
 ORDER BY
     Difference DESC;
+--------------------------------
+
+c2: (nên dùng, vì nó là của NHA :))))
+//////////////////////////////////////
+SELECT productCode, productName, (SELECT SUM(quantityOrdered * (p.MSRP - p.buyPrice))
+								  FROM orderDetails
+                                  WHERE productCode = p.productCode) AS profit1,
+                                 (SELECT SUM(quantityOrdered * (priceEach - p.buyPrice))
+                                  FROM orderDetails
+                                  WHERE productCode = p.productCode) AS profit2,
+								 (SELECT profit1 - profit2) AS difference
+FROM products p
