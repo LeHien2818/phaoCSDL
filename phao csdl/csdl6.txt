@@ -92,8 +92,6 @@ profit2 là sum của quantityOrder * (priceEach - buyPrice)
 
 difference là profit1 - profit2
 
-4 chữ cái đầu trong tên < 1940 thì là group1, còn lại là 2 (kể cả mấy con 18th century)
-
  SELECT productCode, productName, (SELECT SUM(quantityOrdered * (MSRP - buyPrice))
 								  FROM orderDetails
                                   WHERE productCode = p.productCode) AS profit1, 
@@ -104,3 +102,5 @@ difference là profit1 - profit2
                                   SUBSTRING(productName, 1 ,4) AS first4Char,
                                   (SELECT IF(first4Char REGEXP '^[0-9]+$' AND first4Char < 1940, 1, 2)) AS 'Group'
 FROM products p;
+
+4 chữ cái đầu trong tên < 1940 thì là group1, còn lại là 2 (kể cả mấy con 18th century)
