@@ -23,7 +23,7 @@ ORDER BY totalCancel DESC LIMIT 3;
 
 
 
-Câu 2. Thông tin người nợ xấu (debt/purchase > 0.3)
+Câu 2. Thông tin người nợ xấu (debt/purchase >= 0.3)
 	-TH loại cả các đơn hàng cancelled:
 ////////////////////////
 SELECT customerName, customerNumber FROM
@@ -37,7 +37,7 @@ SELECT customerName, customerNumber FROM
                                       WHERE c.customerNumber = customerNumber) AS totalPaid, 
                                       (SELECT totalPurchase - totalPaid) AS debt
 FROM customers c) t
-WHERE debt/totalPurchase > 0.3;
+WHERE debt/totalPurchase >= 0.3;
 
 	-TH không loại các đơn hàng cancelled:
 ///////////////////
@@ -47,7 +47,7 @@ SELECT customerNumber, customerName,
  (SELECT orderNumber FROM orders WHERE customerNumber = customers.customerNumber)) AS totalPurchased,
 (SELECT totalPurchased - totalPaid) AS totalDebt
 FROM customers
-HAVING (totalDebt / totalPurchased) > 0.3
+HAVING (totalDebt / totalPurchased) >= 0.3
 
 
 
